@@ -1,36 +1,121 @@
 # RAG and Agentic NLP Systems
 
-A collection of Retrieval-Augmented Generation and LangGraph projects: a Persian legal assistant, a multi-tool travel agent, and supporting RAG evaluation experiments.
+A collection of retrieval-augmented generation and tool-using agent projects built with LangGraph, LanceDB, and modern LLM tooling. The repository contains a Persian legal assistant, a travel-planning agent, and a compact hands-on RAG evaluation notebook.
 
-## Highlights
+## Projects included
 
-### Persian legal assistant
+### 1. Persian legal RAG assistant
 
-- Extracts and OCRs Persian legal documents.
-- Chunks laws by article and enriches them with metadata.
-- Stores embeddings in LanceDB and performs filtered retrieval and reranking.
-- Uses a LangGraph workflow for query rewriting, intent classification, retrieval, and answer generation.
-- Includes RAGAS-based evaluation and a Chainlit interface.
+The legal assistant answers questions using Persian legal documents rather than relying only on a language model's internal knowledge.
 
-### Travel agent
+#### Document pipeline
 
-- Implements flight, hotel, restaurant, weather, currency, FAQ, and trip-planning tools.
-- Uses vector search and external travel-data integrations.
-- Orchestrates tool calls through a LangGraph agent and provides a CLI workflow.
+- Detects whether PDFs are scanned or text-based.
+- Converts scanned pages to images and applies OCR preprocessing.
+- Extracts and validates Persian text.
+- Normalizes Persian and English digits.
+- Detects article numbers and chunks documents by legal article.
+- Adds metadata such as source file, article number, and legal domain.
 
-## Repository contents
+#### Retrieval and generation pipeline
 
-- `Legal_RAG_Assistant.ipynb`, `app.py`, `chainlit.md`: legal RAG system.
-- `Travel_Agent.ipynb`, `FAQ.js`: travel agent.
-- `NLP_CA5_Q1_HandsOn.ipynb`: compact RAG and evaluation exercises.
-- `requirements.txt`: original travel-agent dependencies.
+- Creates dense embeddings for document chunks and queries.
+- Stores vectors and metadata in LanceDB.
+- Rewrites ambiguous user questions.
+- Classifies intent and extracts metadata filters.
+- Retrieves and reranks relevant legal passages.
+- Generates answers grounded in the retrieved context.
+- Tracks retries and execution time through a LangGraph state machine.
 
-Source PDFs, generated vector databases, videos, caches, and API keys are excluded. Create a local `.env` with the keys referenced in the notebooks; never commit it.
+#### Evaluation and interface
 
-## Run
+- Evaluates retrieval and generation with RAGAS.
+- Includes a Chainlit-based user interface in `app.py`.
+- Supports focused experiments through `Legal_RAG_Assistant.ipynb`.
 
-Use a Python virtual environment and follow the installation cells in each notebook. Some workflows require GPU access and external API credentials.
+### 2. Multi-tool travel agent
 
-## Topics
+The travel agent coordinates external services and local retrieval tools to answer multi-step travel requests.
 
-`rag` · `langgraph` · `lancedb` · `agents` · `chainlit` · `ragas` · `persian-nlp`
+Implemented capabilities include:
+
+- Airport and city IATA-code resolution.
+- Flight search and itinerary normalization.
+- Hotel search and offer selection.
+- Restaurant discovery and page-content extraction.
+- Weather lookup with clothing recommendations.
+- Currency conversion.
+- FAQ retrieval through vector search.
+- Travel-book semantic search.
+- Multi-step trip planning with LangGraph.
+- Command-line interaction and scenario testing.
+
+Saved notebook outputs demonstrate flight, hotel, weather, FAQ, and travel-book queries. External results depend on API availability and the date of execution.
+
+### 3. Hands-on RAG experiments
+
+`NLP_CA5_Q1_HandsOn.ipynb` introduces vLLM, LanceDB, LangGraph, and RAGAS through smaller experiments. One saved evaluation run reports an answer-relevancy score of approximately `0.917`.
+
+## Repository structure
+
+```text
+.
+├── Legal_RAG_Assistant.ipynb  # Persian legal document RAG pipeline
+├── Travel_Agent.ipynb         # Multi-tool travel agent
+├── NLP_CA5_Q1_HandsOn.ipynb   # Focused RAG and evaluation exercises
+├── app.py                     # Chainlit legal-assistant application
+├── chainlit.md                # Chainlit welcome content
+├── FAQ.js                     # Travel FAQ knowledge source
+├── requirements.txt           # Original travel-agent dependencies
+├── .gitignore
+└── README.md
+```
+
+## Requirements
+
+The combined projects use several libraries, including:
+
+- LangChain and LangGraph
+- LanceDB
+- OpenAI-compatible model clients
+- FastEmbed
+- RAGAS
+- Chainlit
+- PyMuPDF and OCR tooling
+- pandas and PyArrow
+- Travel and search APIs used by the travel agent
+
+Because each notebook targets a slightly different runtime, follow its installation cells instead of installing every optional package globally.
+
+## Configuration
+
+Create a local `.env` file only when needed. Depending on the notebook, you may need keys for LLM, embedding, travel, weather, or search providers.
+
+```env
+# Example placeholders — never commit real values
+OPENAI_API_KEY=replace-me
+```
+
+The `.env` file is ignored by Git. Review each notebook for the exact variables required by the selected workflow.
+
+## Running the notebooks
+
+1. Create a virtual environment or use a GPU-enabled hosted notebook.
+2. Install the dependencies listed in the relevant notebook.
+3. Configure required environment variables.
+4. Provide the source documents or allow the notebook to download its public datasets.
+5. Run ingestion before retrieval, and retrieval before agent evaluation.
+
+To start the Chainlit application after preparing the legal vector database:
+
+```bash
+chainlit run app.py
+```
+
+## Data and security notes
+
+Source PDFs, generated LanceDB databases, downloaded datasets, videos, caches, and API credentials are excluded. These artifacts are either reproducible, private, or unnecessarily large for source control.
+
+## Technologies
+
+`RAG` · `LangGraph` · `LanceDB` · `RAGAS` · `Chainlit` · `OCR` · `Tool-Using Agents` · `Persian NLP`
